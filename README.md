@@ -2,11 +2,11 @@
 
 This is material for a tutorial on machine learning presented at the SciDAC ImPACTS project meeting 2025. 
 
-Setup
+## Setup
 1. Log into a NERSC machine such as perlmutter in a terminal 
 2. Clone this repository in your home directory.
 
-Running
+## Running
 An allocation has been created at NERSC for this tutorial.
 The tutorials are best run on jupyterhub at NERSC.
 
