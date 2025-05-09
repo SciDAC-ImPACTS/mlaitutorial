@@ -33,6 +33,27 @@ class MLP(nn.Module):
         output = self.net(input)
         return output
 
+class Time_Varying_MLP(nn.Module):
+    def __init__(self, input_dim: int, timesteps: int, latent_size: int, hidden_dim: int, output_dim:int, num_layers: int, activation=nn.ReLU(), last_activation=nn.Sigmoid(), bias=True, activate_final=False):
+        super().__init__()
+
+        # Learnable latent for each timestep
+        self.latents = nn.Parameter(torch.randn(timesteps, latent_size))  # shape: (T, latent_dim)
+        
+        self.net = []
+        self.net.append(MLPLayer(input_dim+latent_size, hidden_dim, activation, bias=bias, activate=True))
+        for i in range(num_layers-1):
+            self.net.append(MLPLayer(hidden_dim, hidden_dim, activation, bias=bias, activate=True))
+        self.net.append(MLPLayer(hidden_dim, output_dim, last_activation, bias=bias, activate=activate_final))
+        
+        self.net = nn.Sequential(*self.net)
+        
+    def forward(self, coords, t) -> torch.Tensor:
+        latent = self.latents[t]
+        latent = latent.expand(coords.size(0), -1)
+        output = self.net(torch.cat([coords, latent], dim=-1))
+        return output
+
 ###########################################################################################
 # Define positional encoding for low spatial spectrum input
 ###########################################################################################
